@@ -1,0 +1,13 @@
+# Python
+.idea/
+.venv/
+__pycache__/
+
+# Django
+mediafiles/
+staticfiles/
+
+# Terraform
+.terraform/
+terraform.tfstate
+terraform.tfstate.*
