@@ -1,3 +1,4 @@
+# --- iam.tf ---
 resource "aws_iam_user" "django" {
   name = var.project_name
   path = "/users/"

@@ -131,18 +131,9 @@ if USE_S3:
     AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
     AWS_LOCATION = 'static'
 
-    # Django < 4.2
     # configures Django to automatically add static files to the s3 bucket when collectstatic is run
     STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'  # static files
     DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'  # media files
-
-    # Django > 4.2
-
-    # https://testdriven.io/blog/storing-django-static-and-media-files-on-amazon-s3/
-    # AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'max-age=86400'}
-    # s3 static settings
-    #
-    # STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{AWS_LOCATION}/'
 
 else:
     STATIC_URL = '/staticfiles/'
