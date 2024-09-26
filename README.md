@@ -21,3 +21,9 @@ TODO
   ```
   - and delete on destroy
 
+### Tearing Down
+```shell
+docker-compose down
+aws s3 rm s3://learn-django-docker-s3 --recursive
+terraform destroy -auto-approve
+```

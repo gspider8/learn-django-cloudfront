@@ -20,8 +20,8 @@ services:
       - SQL_PORT=5432
       - DATABASE=postgres
       - USE_S3=True
-      - AWS_ACCESS_KEY_ID=AKIA6GI6GY3J6BACPNEJ
-      - AWS_SECRET_ACCESS_KEY=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
+      - AWS_ACCESS_KEY_ID=
+      - AWS_SECRET_ACCESS_KEY=
       - AWS_STORAGE_BUCKET_NAME=learn-django-docker-s3
     depends_on:
       - db
