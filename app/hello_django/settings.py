@@ -119,31 +119,32 @@ USE_L10N = True
 
 USE_TZ = True
 
-# -- AWS Configuration
-AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
-AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
-
-# -- Static Files --
+# -- Static & Media Files --
 USE_S3 = os.getenv('USE_S3') == 'True'
 
 if USE_S3:
+    # - AWS Configuration -
+    AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
+    AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
     AWS_STORAGE_BUCKET_NAME = os.getenv('AWS_STORAGE_BUCKET_NAME')
     AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
-    AWS_LOCATION = 'static'
 
-    # configures Django to automatically add static files to the s3 bucket when collectstatic is run
-    STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'  # static files
-    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'  # media files
+    # - S3 Static Files -
+    STATIC_LOCATION = 'static'  # new
+    STATICFILES_STORAGE = 'hello_django.storage_backends.StaticStorage'  # new
+
+    # - S3 Public Media Files -
+    PUBLIC_MEDIA_LOCATION = 'media'
+    MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{PUBLIC_MEDIA_LOCATION}/'
+    DEFAULT_FILE_STORAGE = 'hello_django.storage_backends.PublicMediaStorage'
 
 else:
     STATIC_URL = '/staticfiles/'
     STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+    MEDIA_URL = '/mediafiles/'
+    MEDIA_ROOT = os.path.join(BASE_DIR, 'mediafiles')
 
 STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
-
-# -- Media Files --
-MEDIA_URL = '/mediafiles/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'mediafiles')
 
 CSRF_TRUSTED_ORIGINS = ['http://127.0.0.1:1337', 'http://localhost:1337']
 

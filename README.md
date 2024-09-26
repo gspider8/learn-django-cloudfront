@@ -1,12 +1,16 @@
 # Django + S3
-
-continue at https://www.youtube.com/watch?v=JQVQcNN0cXE django -v > 4.2
+Resources: 
+- https://www.youtube.com/watch?v=JQVQcNN0cXE
+- https://testdriven.io/blog/storing-django-static-and-media-files-on-amazon-s3
 
 ```shell
+terraform apply -auto-approve
+# update docker-compose env variables with IAM user credentials 
+docker-compose up -d
 docker-compose exec web python manage.py collectstatic
-
+docker-compose exec web python manage.py migrate
+docker-compose exec web python manage.py makemigrations
 ```
-terraform is up 
 
 TODO 
 - make a script to write aws credentials to ~/.aws/credentials in format: 
@@ -16,4 +20,4 @@ TODO
   aws_secret_access_key=faefaeafs
   ```
   - and delete on destroy
-https://testdriven.io/blog/storing-django-static-and-media-files-on-amazon-s3
+
