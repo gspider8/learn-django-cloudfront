@@ -12,3 +12,6 @@ staticfiles/
 terraform.tfstate
 terraform.tfstate.*
 *.tfvars
+
+# Environment
+.env.aws

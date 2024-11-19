@@ -1,25 +1,26 @@
 # pull official base image
-FROM python:3.11.1-alpine
+FROM python:3.11.4-slim-buster
+LABEL authors="gspider8"
+
+# set work directory
+WORKDIR /usr/src/app
 
 # set environment varibles
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
-# set work directory
-WORKDIR /usr/src/app
-
-# install system dependencies
-RUN apk update \
-    && apk add --virtual build-deps gcc python3-dev musl-dev \
-    && apk add bash postgresql-dev \
-    && pip install psycopg2 \
-    && apk del build-deps
-
-# install python dependencies
+# install dependencies
 RUN pip install --upgrade pip
-COPY ./requirements.txt /usr/src/app/requirements.txt
+COPY ./requirements.txt .
 RUN pip install -r requirements.txt
-RUN pip install psycopg2
+
+# copy entrypoint.sh
+COPY entrypoint.sh .
+RUN sed -i 's/\r$//g' /usr/src/app/entrypoint.sh
+RUN chmod +x /usr/src/app/entrypoint.sh
 
 # copy project
 COPY . /usr/src/app/
+
+# run entrypoint.sh
+ENTRYPOINT ["/usr/src/app/entrypoint.sh"]
