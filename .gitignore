@@ -11,3 +11,4 @@ staticfiles/
 .terraform/
 terraform.tfstate
 terraform.tfstate.*
+*.tfvars

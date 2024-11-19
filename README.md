@@ -3,6 +3,7 @@ Resources:
 - https://www.youtube.com/watch?v=JQVQcNN0cXE
 - https://testdriven.io/blog/storing-django-static-and-media-files-on-amazon-s3
 
+### Build
 ```shell
 terraform apply -auto-approve
 # update docker-compose env variables with IAM user credentials 

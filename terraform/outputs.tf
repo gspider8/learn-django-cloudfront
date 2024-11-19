@@ -1,12 +1,11 @@
-output "django_access_key" {
-  value = aws_iam_access_key.django.id
+output "instance_ip" {
+  value = module.web_server.instance.public_ip
 }
 
-output "django_secret_access_key" {
-  value     = aws_iam_access_key.django.secret
-  sensitive = true
+output "instance_sshkey" {
+  value = var.public_key_name
 }
 
-output "bucket-name" {
-  value = aws_s3_bucket.main.bucket
+output "bucket_credentials" {
+  value = "${module.storages[0].bucket.bucket}: ${module.storages[0].access_key.id}, (secret)"
 }
