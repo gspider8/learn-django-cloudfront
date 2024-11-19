@@ -1,22 +1,3 @@
-module "web_server" {
-  source = "github.com/gspider8/terraform-aws-django-app_server?ref=v0.0.3"
-
-  my_ip             = var.my_ip
-  project_name      = var.project_name
-  block_volume_size = 10
-  sgs               = local.web_server_security_groups
-
-  ssh_key = {
-    name = var.public_key_name
-    public_key = file(var.public_key_path)
-  }
-
-  instance_tags = {
-    Name    = var.project_name
-    Project = var.project_name
-  }
-}
-
 module "storages" {
   source             = "github.com/gspider8/terraform-aws-django-storages?ref=v0.0.4"
   count              = length(local.buckets)
@@ -31,3 +12,30 @@ module "storages" {
 }
 
 
+
+# module "web_server" {
+#   source = "github.com/gspider8/terraform-aws-django-app_server?ref=v0.0.3"
+#
+#   my_ip             = var.my_ip
+#   project_name      = var.project_name
+#   block_volume_size = 10
+#   sgs               = local.web_server_security_groups
+#
+#   ssh_key = {
+#     name = var.public_key_name
+#     public_key = file(var.public_key_path)
+#   }
+#
+#   instance_tags = {
+#     Name    = var.project_name
+#     Project = var.project_name
+#   }
+# }
+#
+# output "instance_ip" {
+#   value = module.web_server.instance.public_ip
+# }
+#
+# output "instance_sshkey" {
+#   value = var.public_key_name
+# }
