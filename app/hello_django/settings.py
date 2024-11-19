@@ -12,16 +12,20 @@ if USE_S3:
     AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
     AWS_STORAGE_BUCKET_NAME = os.getenv('AWS_STORAGE_BUCKET_NAME')
     AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
+    AWS_S3_SIGNATURE_VERSION = "s3v4"
+    AWS_QUERYSTRING_EXPIRE = 60  # 604800
+    CLOUDFRONT_DOMAIN = os.getenv('CLOUDFRONT_DOMAIN')
 
     # - S3 Static Files -
-    STATIC_LOCATION = 'static'  # new
-    STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{STATIC_LOCATION}/'
-    STATICFILES_STORAGE = 'hello_django.storage_backends.StaticStorage'  # new
+    STATIC_LOCATION = 'static'
+    STATIC_URL = f"{CLOUDFRONT_DOMAIN}/{STATIC_LOCATION}/"
+    # STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{STATIC_LOCATION}/'
+    STATICFILES_STORAGE = 'hello_django.storage_backends.StaticCF'  # new
 
     # - S3 Public Media Files -
-    PUBLIC_MEDIA_LOCATION = 'media'
-    MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{PUBLIC_MEDIA_LOCATION}/'
-    DEFAULT_FILE_STORAGE = 'hello_django.storage_backends.PublicMediaStorage'
+    # PUBLIC_MEDIA_LOCATION = 'media'
+    # MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{PUBLIC_MEDIA_LOCATION}/'
+    # DEFAULT_FILE_STORAGE = 'hello_django.storage_backends.PublicMediaStorage'
 
 else:
     STATIC_URL = '/staticfiles/'

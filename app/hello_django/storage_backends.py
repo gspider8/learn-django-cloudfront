@@ -12,3 +12,7 @@ class PublicMediaStorage(S3Boto3Storage):
     location = 'media'
     file_overwrite = False
     # default_acl = 'public-read'
+
+class StaticCF(S3Boto3Storage):
+    location = 'static'
+    custom_domain = settings.CLOUDFRONT_DOMAIN

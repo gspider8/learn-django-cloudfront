@@ -1,3 +1,36 @@
+resource "aws_cloudfront_distribution" "main" {
+  origin {
+    domain_name = module.storages[0].bucket.bucket_regional_domain_name
+    origin_id   = local.s3_origin_id
+
+    origin_shield {
+      enabled = false  # change to true
+      origin_shield_region = "us-east-1"
+    }
+  }
+  enabled         = true
+  is_ipv6_enabled = true
+  default_cache_behavior {
+    target_origin_id = local.s3_origin_id
+    cache_policy_id = "4135ea2d-6df8-44a3-9df3-4b5a84be39ad" # CachingDisabled
+    allowed_methods  = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
+    cached_methods   = ["GET", "HEAD"]
+
+    viewer_protocol_policy = "allow-all"
+  }
+
+  viewer_certificate {
+    cloudfront_default_certificate = true
+  }
+  restrictions {
+    geo_restriction {
+      restriction_type = "none"
+    }
+  }
+}
+
+
+
 module "storages" {
   source             = "github.com/gspider8/terraform-aws-django-storages?ref=v0.0.4"
   count              = length(local.buckets)

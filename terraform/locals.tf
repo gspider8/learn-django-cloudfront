@@ -8,6 +8,9 @@ locals {
       policy_type = "django_user"
     }
   }]
+
+  s3_origin_id = "${var.project_name}-bucket"
+
   web_server_security_groups = {
     ipv4 = {
       local_ssh = {
