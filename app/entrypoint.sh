@@ -16,7 +16,9 @@ then
 fi
 
 python manage.py flush --no-input
+echo "migrate"
 python manage.py migrate
+echo "collectstatic running"
 python manage.py collectstatic --no-input
 
 exec "$@"

@@ -1,5 +1,5 @@
 output "bucket_credentials" {
-  value = "${module.storages[0].bucket.bucket}: ${module.storages[0].access_key.id}, (secret)"
+  value = "${aws_s3_bucket.main.bucket}: ${aws_iam_access_key.main.id}, (secret)"
 }
 
 output "cloudfront_domain" {

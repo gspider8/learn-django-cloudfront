@@ -1,5 +1,5 @@
 locals {
-  buckets = [{
+  buckets = {
     name          = "dev-django-storages-${var.project_name}"
     bucket_policy = "public_read"
     iam_user = {
@@ -7,7 +7,7 @@ locals {
       name        = "dev-django-storages-${var.project_name}-access"
       policy_type = "django_user"
     }
-  }]
+  }
 
   s3_origin_id = "${var.project_name}-bucket"
 
