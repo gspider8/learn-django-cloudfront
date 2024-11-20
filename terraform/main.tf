@@ -18,7 +18,7 @@ resource "aws_s3_bucket_public_access_block" "main" {
   restrict_public_buckets = false
 }
 
-data "aws_cloudfront_response_headers_policy" "main" {
+data "aws_cloudfront_response_headers_policy" "simple_cors" {
   name = "Managed-SimpleCORS"
 }
 
@@ -28,21 +28,21 @@ resource "aws_cloudfront_distribution" "main" {
     origin_id   = local.s3_origin_id
     origin_access_control_id = aws_cloudfront_origin_access_control.main.id
 
-#     origin_shield {
-#       enabled = false  # change to true
-#       origin_shield_region = "us-east-1"
-#     }
+    origin_shield {
+      enabled = true
+      origin_shield_region = "us-east-1"
+    }
   }
   enabled         = true
   is_ipv6_enabled = true
   default_cache_behavior {
     target_origin_id = local.s3_origin_id
-    response_headers_policy_id = data.aws_cloudfront_response_headers_policy.main.id
+    response_headers_policy_id = data.aws_cloudfront_response_headers_policy.simple_cors.id
     cache_policy_id = "4135ea2d-6df8-44a3-9df3-4b5a84be39ad" # CachingDisabled
     allowed_methods  = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
     cached_methods   = ["GET", "HEAD"]
 
-    viewer_protocol_policy = "allow-all"
+    viewer_protocol_policy = "https-only"
   }
 
   viewer_certificate {
@@ -71,8 +71,7 @@ data "aws_iam_policy_document" "cloudfront_orign" {
       identifiers = ["cloudfront.amazonaws.com"]
     }
     actions = [
-      "s3:GetObject",
-      "s3:PutObject"
+      "s3:GetObject"
     ]
     resources = [
       "${aws_s3_bucket.main.arn}/*"
@@ -93,22 +92,8 @@ resource "aws_s3_bucket_policy" "main" {
   depends_on = [aws_s3_bucket_public_access_block.main]
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 # -- iam --
+
 data "aws_iam_policy_document" "django_user" {
   statement {
     sid    = "1"
