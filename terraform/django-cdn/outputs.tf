@@ -18,6 +18,6 @@ output "iam_user_policy" {
   value = length(aws_iam_user_policy.main) > 0 ? aws_iam_user_policy.main[0] : null
 }
 
-output "access_key" {
+output "iam_user_access" {
   value = length(aws_iam_access_key.main) > 0 ? aws_iam_access_key.main[0] : null
 }
