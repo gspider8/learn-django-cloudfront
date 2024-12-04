@@ -1,8 +1,13 @@
-cloudfront is up and django collectstatic was able to write files through cf 
-to the s3 origin. 
-files are not being received by the client
+## Startup
+git clone
+terraform apply
+update .env.aws
+```
+AWS_STORAGE_BUCKET_NAME=
+AWS_ACCESS_KEY_ID=
+AWS_SECRET_ACCESS_KEY=
+CLOUDFRONT_DOMAIN=
+```
+docker-compose up -d --build
 
-.env.aws
-```
-CLOUDFRONT_DOMAIN=d7lrcr1mxoh7d.cloudfront.net
-```
+to check go to 127.0.0.1:8000 and inspect the page and refresh, it should be sourced from the cloudfront module

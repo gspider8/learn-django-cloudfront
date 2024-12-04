@@ -1,5 +1,5 @@
 resource "aws_s3_bucket" "main" {
-  bucket = local.buckets.name
+  bucket = var.bucket_name
 }
 
 resource "aws_s3_bucket_versioning" "main" {
@@ -9,15 +9,16 @@ resource "aws_s3_bucket_versioning" "main" {
   }
 }
 
-resource "aws_s3_bucket_public_access_block" "main" {
-  bucket = aws_s3_bucket.main.id
+# resource "aws_s3_bucket_public_access_block" "main" {
+#   bucket = aws_s3_bucket.main.id
+#
+#   block_public_acls       = true
+#   ignore_public_acls      = true
+#   block_public_policy     = true
+#   restrict_public_buckets = true
+# }
 
-  block_public_acls       = true
-  ignore_public_acls      = true
-  block_public_policy     = true
-  restrict_public_buckets = true
-}
-
+# CORS Policy for CloudFront
 data "aws_cloudfront_response_headers_policy" "simple_cors" {
   name = "Managed-SimpleCORS"
 }
@@ -25,7 +26,7 @@ data "aws_cloudfront_response_headers_policy" "simple_cors" {
 resource "aws_cloudfront_distribution" "main" {
   origin {
     domain_name = aws_s3_bucket.main.bucket_regional_domain_name
-    origin_id   = local.s3_origin_id
+    origin_id   = var.origin_id
     origin_access_control_id = aws_cloudfront_origin_access_control.main.id
 
     origin_shield {
@@ -36,7 +37,7 @@ resource "aws_cloudfront_distribution" "main" {
   enabled         = true
   is_ipv6_enabled = true
   default_cache_behavior {
-    target_origin_id = local.s3_origin_id
+    target_origin_id = var.origin_id
     response_headers_policy_id = data.aws_cloudfront_response_headers_policy.simple_cors.id
     cache_policy_id = "4135ea2d-6df8-44a3-9df3-4b5a84be39ad" # CachingDisabled
     allowed_methods  = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
@@ -55,14 +56,15 @@ resource "aws_cloudfront_distribution" "main" {
   }
 }
 
+# Create an Origin Access Control to Eliminate access to bucket over public internet
 resource "aws_cloudfront_origin_access_control" "main" {
-  name                              = "${var.project_name}-oac"
+  name                              = "${var.origin_id}-oac"
   origin_access_control_origin_type = "s3"
   signing_behavior                  = "always"
   signing_protocol                  = "sigv4"
 }
 
-data "aws_iam_policy_document" "cloudfront_orign" {
+data "aws_iam_policy_document" "oac" {
   statement {
     sid = "OAC"
     effect = "Allow"
@@ -86,14 +88,13 @@ data "aws_iam_policy_document" "cloudfront_orign" {
   }
 }
 
-resource "aws_s3_bucket_policy" "main" {
+resource "aws_s3_bucket_policy" "oac" {
   bucket = aws_s3_bucket.main.id
-  policy = data.aws_iam_policy_document.cloudfront_orign.json
-  depends_on = [aws_s3_bucket_public_access_block.main]
+  policy = data.aws_iam_policy_document.oac.json
+#   depends_on = [aws_s3_bucket_public_access_block.main]
 }
 
 # -- iam --
-
 data "aws_iam_policy_document" "django_user" {
   statement {
     sid    = "1"
@@ -123,57 +124,20 @@ data "aws_iam_policy_document" "django_user" {
 }
 
 resource "aws_iam_user" "main" {
-  name = local.buckets.iam_user.name
+  count = var.iam_user.create ? 1 : 0
+  name = var.iam_user.name
   path = "/users/"
-#   tags = var.tags
+  tags = var.tags
 }
 
 resource "aws_iam_user_policy" "main" {
-  user   = aws_iam_user.main.name
+  count  = var.iam_user.create ? 1 : 0
+  user   = aws_iam_user.main[count.index].name
   policy = data.aws_iam_policy_document.django_user.json
-  name   = "${local.buckets.iam_user.name}-policy"
+  name   = "${var.iam_user.name}-policy"
 }
 
 resource "aws_iam_access_key" "main" {
-  user  = aws_iam_user.main.name
+  count = var.iam_user.create ? 1 : 0
+  user  = aws_iam_user.main[count.index].name
 }
-
-# module "storages" {
-#   source             = "github.com/gspider8/terraform-aws-django-storages?ref=v0.0.4"
-#   count              = length(local.buckets)
-#   bucket_name        = local.buckets[count.index].name
-#   bucket_policy_type = local.buckets[count.index].bucket_policy
-#   iam_user           = local.buckets[count.index].iam_user
-#
-#   tags = {
-#     Environment = "Dev"
-#     Project     = "mlehr.org"
-#   }
-# }
-
-# module "web_server" {
-#   source = "github.com/gspider8/terraform-aws-django-app_server?ref=v0.0.3"
-#
-#   my_ip             = var.my_ip
-#   project_name      = var.project_name
-#   block_volume_size = 10
-#   sgs               = local.web_server_security_groups
-#
-#   ssh_key = {
-#     name = var.public_key_name
-#     public_key = file(var.public_key_path)
-#   }
-#
-#   instance_tags = {
-#     Name    = var.project_name
-#     Project = var.project_name
-#   }
-# }
-#
-# output "instance_ip" {
-#   value = module.web_server.instance.public_ip
-# }
-#
-# output "instance_sshkey" {
-#   value = var.public_key_name
-# }

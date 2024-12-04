@@ -1,7 +1,7 @@
 output "bucket_credentials" {
-  value = "${aws_s3_bucket.main.bucket}: ${aws_iam_access_key.main.id}, (secret)"
+  value = "${module.django-cdn.bucket.bucket}: ${module.django-cdn.access_key.id}, (secret)"
 }
 
 output "cloudfront_domain" {
-  value = aws_cloudfront_distribution.main.domain_name
+  value = module.django-cdn.cdn.domain_name
 }
