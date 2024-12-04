@@ -1,5 +1,7 @@
 module "django-cdn" {
-  source = "./django-cdn"
+#   source = "./django-cdn"
+  source = "github.com/gspider8/terraform-aws-django-cdn?ref=v0.0.1"
+
 
   bucket_name = "${var.project_name}-django-cdn"
   origin_id   = "${var.project_name}-bucket"
